@@ -1,6 +1,12 @@
 # competitive-programming
 
-Contest names withheld
+Contest name withheld
+
+Outline:
+* determing tree diameter
+* hang the tree by the middle of diameter path
+* now it's a coloring problem
+* extra consideration when diameter comprises odd number of edges
 
 ### Determine diameter
 Since graph is a tree, diameter can be computed naively as follows:
