@@ -1,10 +1,10 @@
+# doc: git.io/vy4co
 from operator import mul
 from functools import reduce
 
 
 def build_graph(inp):
     nodes = dict()
-    names = dict()
     N = None
 
     for line in inp:
@@ -13,7 +13,6 @@ def build_graph(inp):
             N = int(line.strip())
             for k in range(1, N + 1):
                 nodes[k] = set()
-                names[id(nodes[k])] = nodes[k]
             continue
 
         # create edges
@@ -21,7 +20,7 @@ def build_graph(inp):
         nodes[i].add(k)
         nodes[k].add(i)
 
-    return nodes, names
+    return nodes
 
 
 def longest_trace_from(nodes, start, exclude=None):
@@ -265,13 +264,13 @@ def sample_data1():
 
 @pytest.fixture
 def nodes(sample_data1):
-    nodes, name = sample_data1
+    nodes = sample_data1
     return nodes
 
 
 @pytest.fixture
 def nodes2():
-    nodes, names = build_graph("""4
+    nodes = build_graph("""4
                                   1 2
                                   2 3
                                   3 4""".strip().splitlines())
@@ -280,7 +279,7 @@ def nodes2():
 
 @pytest.fixture
 def nodes3():
-    nodes, names = build_graph("""6
+    nodes = build_graph("""6
                                   1 2
                                   1 3
                                   1 4
@@ -291,7 +290,7 @@ def nodes3():
 
 @pytest.fixture
 def nodes4():
-    nodes, names = build_graph("""10
+    nodes = build_graph("""10
                                   2 4
                                   2 5
                                   8 3
@@ -307,7 +306,7 @@ def nodes4():
 @pytest.fixture
 def six_in_line():
     """ 1 line, 6 edges (7 nodes) """
-    nodes, names = build_graph("""7
+    nodes = build_graph("""7
                                   1 2
                                   2 3
                                   3 4
