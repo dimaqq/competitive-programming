@@ -22,3 +22,5 @@ Since graph is a tree, diameter can be computed naively as follows:
 ### Odd diameter
 
 ![option1](https://github.com/dimaqq/competitive-programming/raw/master/subtree-odd.png "Odd diameter")
+
+![option1](https://github.com/dimaqq/competitive-programming/raw/master/subtree-counting-odd.png "Counting odd")
