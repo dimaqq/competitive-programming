@@ -1,6 +1,8 @@
 # competitive-programming
 
-Contest name withheld
+( Contest name withheld )
+
+( Link to self: https://git.io/vy4co )
 
 Outline:
 * determing tree diameter
