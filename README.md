@@ -14,3 +14,11 @@ Outline:
 Since graph is a tree, diameter can be computed naively as follows:
 
 ![option1](https://github.com/dimaqq/competitive-programming/raw/master/subtree-diameter.png "Diameter algorithm")
+
+### Tree colouring
+
+![option1](https://github.com/dimaqq/competitive-programming/raw/master/subtree-even.png "Colouring")
+
+### Odd diameter
+
+![option1](https://github.com/dimaqq/competitive-programming/raw/master/subtree-odd.png "Odd diameter")
