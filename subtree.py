@@ -64,12 +64,9 @@ def combinations(nodes):
     if L % 2:
         # longest path has odd number of nodes, thus even number of edges
         tree = shape3(nodes, root)
-        for limits in zip(range(C + 1), reversed(range(C + 1))):
-            print(limits, tree, enum(limits, tree))
         return sum(enum(limits, tree) for limits in zip(range(C + 1), reversed(range(C + 1))))
     else:
         # longest path has even number of nodes, odd number of edges
-        neigh = nodes[root]  # mid-point's neighbours
         left = path[L // 2 - 1]
         # virtual tree (root->left->left's children)
         left_tree = tuplex([shape3(nodes, left, exclude=root)])
@@ -77,6 +74,29 @@ def combinations(nodes):
         right_tree = shape3(nodes, root, exclude=left)
         assert left_tree.height[1] == C
         assert right_tree.height[1] == C - 1
+        lg = [i // 2 for i in range(1, C * 2 + 2)]
+        ll = list(zip(lg, reversed(lg)))
+        rg = [i // 2 for i in range(C * 2 + 1)]
+        rl = list(zip(rg, reversed(rg)))
+        print("-" * 20)
+        print(ll)
+        print(rl)
+        tot = 0
+        lrvs = dict()
+        rrvs = dict()
+        for i in range(len(ll)):
+            left_limits = ll[i]
+            right_limits = rl[i]
+            if sum(left_limits) > C:
+                neigh = ll[i - 1: i] + ll[i + 1: i + 2]
+                lrv = lrvs[left_limits] = enum(left_limits, left_tree) - sum(enum(ne, left_tree) for ne in neigh)
+            else:
+                lrv = lrvs[left_limits] = enum(left_limits, left_tree)
+            rrv = rrvs[right_limits] = enum(right_limits, right_tree)
+            print(left_limits, "nw"[sum(left_limits) > C], lrv, right_limits, "nw"[sum(right_limits) >= C], rrv)
+            # FIXME strict mode
+            tot += lrv * rrv
+        return tot
 
 
 def virtual_tree(nodes, root, branch):
@@ -86,9 +106,8 @@ def virtual_tree(nodes, root, branch):
 
 def logged(f):
     def inner(l, s):
-        import copy
         rv = f(l, s)
-        print(l, s, "=>", rv)
+        # print(l, s, "=>", rv)
         return rv
     return inner
 
@@ -112,18 +131,12 @@ def enum(limits, shape):
     assert b
     assert shape
     tot = 1
-    print("XXstart", hash(shape), limits)
     for subtree in shape:
-        print("XXtrying subtree", hash(shape), subtree)
         acc = 0
         for sublimit in ((r - 1, b), (r, b - 1)):
-            print("XXtrying sublimit", hash(shape), sublimit)
             x = enum(sublimit, subtree)
-            print("XXtrying sublimit", hash(shape), sublimit, "=>", x)
             acc += x
-        print("XXtrying subtree", hash(shape), subtree, "=>", acc)
         tot *= acc
-    print("XXstart", hash(shape), limits, "=>", tot)
     return tot
 
     rv = sum(reduce(mul, (enum(sublimit, subtree) for subtree in shape)) for sublimit in ((r - 1, b), (r, b - 1)))
@@ -133,7 +146,6 @@ def enum(limits, shape):
 
 
 import pytest
-import pprint
 
 
 def test_enum_simple():
@@ -214,7 +226,6 @@ def test_enum_tiered(leaf_shape, I_shape, Y_shape):
 
     assert enum((3, 0), t) == 1
     assert enum((3, 3), t) == 2 ** 6
-    assert enum((2, 1), t) == 5
     
 
 @pytest.fixture
@@ -307,17 +318,13 @@ def six_in_line():
 
 
 def test_com_lines(six_in_line):
-    assert combinations(six_in_line) == 6 * 5 * 4
+    assert combinations(six_in_line) == 20  # C(3,6)
 
 
 def test_com(nodes, nodes2, nodes3, nodes4):
-    combinations(nodes) == 2
-    combinations(nodes2) == 6
-    combinations(nodes3) == 14
-    combinations(nodes4) == 102
     assert combinations(nodes) == 2
-    # assert combinations(nodes2) == 6
-    # assert combinations(nodes3) == 14
+    assert combinations(nodes2) == 6
+    assert combinations(nodes3) == 14
     assert combinations(nodes4) == 102
 
 
@@ -335,13 +342,13 @@ def test_lp(nodes):
     assert len(longest_path(nodes)) == 3  # e.g. (2, 1, 3)
 
 
-# def test_shape3(nodes):
-#     assert shape3(nodes, 3, exclude=1) == ()  # 3 is leaf
-#     assert shape3(nodes, 1, exclude=3) == ((), ())  # 1 has two leaf childred (2, 4); 3 is excluded
-#     tt = shape3(nodes, 1, exclude=3)
-#     assert tt.height == 1
-#     assert not tt[0].height
-#     assert not tt[1].height
+def test_shape3(nodes):
+    assert shape3(nodes, 3, exclude=1) == ()  # 3 is leaf
+    assert shape3(nodes, 1, exclude=3) == ((), ())  # 1 has two leaf childred (2, 4); 3 is excluded
+    tt = shape3(nodes, 1, exclude=3)
+    assert tt.height == (1, 1)
+    assert tt[0].height == (0, 0)
+    assert tt[1].height == (0, 0)
 
 
 def test_tuplex_height():
@@ -367,11 +374,3 @@ def test_tuplex_edges(leaf_shape, I_shape, Y_shape):
     assert not leaf_shape.edges
     assert I_shape.edges == 1
     assert Y_shape.edges == 3
-# 
-# 
-# def subtree_limits(path):
-#     L = len(path)
-#     excl = [frozenset(path[:i][-1:] + path[i + 1:][:1]) for i in range(L)]
-#     high = [min(i, L - i - 1) for i in range(L)]
-#     lims = [tuple((H - i, i) for i in range(H // 2 + 1)) for H in high]
-#     return tuple(dict(start=path[i], exclude=excl[i], limits=lims[i]) for i in range(L))
