@@ -42,10 +42,10 @@ def longest_path(nodes):
 
 def shape3(nodes, start, exclude=None):
     parts = [shape3(nodes, n, exclude=start) for n in nodes[start] if n is not exclude]
-    return tuplex(parts)
+    return tup(parts)
 
 
-class tuplex(tuple):
+class tup(tuple):
     def __new__(cls, arg=()):
         rv = super().__new__(cls, arg)
         # rv = super().__new__(cls, sorted(arg))
@@ -68,7 +68,7 @@ def combinations(nodes):
         # longest path has even number of nodes, odd number of edges
         left = path[L // 2 - 1]
         # virtual tree (root->left->left's children)
-        left_tree = tuplex([shape3(nodes, left, exclude=root)])
+        left_tree = tup([shape3(nodes, left, exclude=root)])
         # everything else (root->(children - left))
         right_tree = shape3(nodes, root, exclude=left)
         assert left_tree.height[1] == C
@@ -95,7 +95,7 @@ def combinations(nodes):
 
 def virtual_tree(nodes, root, branch):
     """ virtual tree rooted at root, where root has only 1 branch, branch """
-    return tuplex([shape3(nodes, branch, exclude=root)])
+    return tup([shape3(nodes, branch, exclude=root)])
 
 
 def enum(limits, shape, _cache=dict()):
