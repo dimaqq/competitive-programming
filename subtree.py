@@ -52,6 +52,9 @@ class tup(tuple):
         Data structure is immutable, thus trees can be referred to by Python builtin hash
     """
     def __new__(cls, arg=()):
+        # `sorted(arg)` can be used below, as order of subtrees is irrelevant
+        # sorting subtrees makes partial result cache smaller,
+        # however extra processing proved a larger factor than cache size
         rv = super().__new__(cls, arg)
         rv.height = (1 + min((t.height[0] for t in rv), default=-1),
                      1 + max((t.height[1] for t in rv), default=-1))
@@ -103,7 +106,8 @@ def virtual_tree(nodes, root, branch):
 
 
 def enum(limits, shape, _cache=dict()):
-    limits = tuple(sorted(limits))  # doesn't matter which is red or bla
+    """ Enumerate possible unique colorings within limits (red, blue) for a tree of given shape """
+    limits = tuple(sorted(limits))  # doesn't matter which is red or blue
     r, b = limits
     low, high = shape.height
     assert low <= high

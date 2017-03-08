@@ -1,4 +1,5 @@
 import pytest
+import random
 import itertools
 import subtree
 
@@ -64,37 +65,31 @@ def haircomb(n, k):
 def test_straight_1000(benchmark):
     n = tuple_to_graph(tentacle(100))
     benchmark(subtree.combinations, n)
-    print("cache size", len(subtree.enum.__defaults__[0]))
 
 
 def test_straight_999(benchmark):
     n = tuple_to_graph(tentacle(99))
     benchmark(subtree.combinations, n)
-    print("cache size", len(subtree.enum.__defaults__[0]))
 
 
 def test_short_haircomb_1000(benchmark):
     n = tuple_to_graph(haircomb(1000, 1))
     benchmark(subtree.combinations, n)
-    print("cache size", len(subtree.enum.__defaults__[0]))
 
 
 def test_short_haircomb_1001(benchmark):
     n = tuple_to_graph(haircomb(1001, 1))
     benchmark(subtree.combinations, n)
-    print("cache size", len(subtree.enum.__defaults__[0]))
 
 
 def test_med_haircomb_1000(benchmark):
     n = tuple_to_graph(haircomb(1000, 5))
     benchmark(subtree.combinations, n)
-    print("cache size", len(subtree.enum.__defaults__[0]))
 
 
 def test_long_haircomb_1000(benchmark):
     n = tuple_to_graph(haircomb(1000, 30))
     benchmark(subtree.combinations, n)
-    print("cache size", len(subtree.enum.__defaults__[0]))
 
 
 def test_hub4(benchmark):
@@ -103,7 +98,6 @@ def test_hub4(benchmark):
     t = (spoke, spoke, spoke, spoke)
     n = tuple_to_graph(t)
     benchmark(subtree.combinations, n)
-    print("cache size", len(subtree.enum.__defaults__[0]))
 
 
 def test_hub4_uneven(benchmark):
@@ -112,12 +106,10 @@ def test_hub4_uneven(benchmark):
     t = (spoke, spoke, spoke, tentacle(251))
     n = tuple_to_graph(t)
     benchmark(subtree.combinations, n)
-    print("cache size", len(subtree.enum.__defaults__[0]))
 
 
 def unique_trees():
     """ A random tree composed of unique subtrees, total weight ~1000 """
-    import random
     basics = [tentacle(i) for i in range(10)]
     level2 = []
     for i, b in enumerate(basics):
@@ -125,18 +117,25 @@ def unique_trees():
             level2.append((b, bb))
     level3 = {tuple(random.sample(level2, 5)) for i in range(20)}
     return tuple(random.sample(level3, 17))
-    print("cache size", len(subtree.enum.__defaults__[0]))
 
 
 def test_unique_trees(benchmark):
     t = unique_trees()
     n = tuple_to_graph(t)
     benchmark(subtree.combinations, n)
-    print("cache size", len(subtree.enum.__defaults__[0]))
 
 
 def test_unique_trees_long(benchmark):
     t = (unique_trees(), tentacle(20), tentacle(21))
     n = tuple_to_graph(t)
     benchmark(subtree.combinations, n)
-    print("cache size", len(subtree.enum.__defaults__[0]))
+    # print("cache size", len(subtree.enum.__defaults__[0]))
+
+
+def test_unbalanced_tree(benchmark):
+    """ A test to determine if sorting subtrees in `tup` is worth it """
+    level0 = [tentacle(i) for i in range(5)]
+    level1 = [(random.sample(level0, 3), random.sample(level0, 3), random.sample(level0, 3)) for _i in range(100)]
+    n = tuple_to_graph(level1)
+    benchmark(subtree.combinations, n)
+    # print("cache size", len(subtree.enum.__defaults__[0]))
