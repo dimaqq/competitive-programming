@@ -48,22 +48,12 @@ def tentacle(n):
     return rv
 
 
-def test_straight_yyy():
-    import time
-    for i in (11, 21, 31, 41, 51, 61):
-        started = time.time()
-        n = tuple_to_graph(tentacle(i))
-        subtree.combinations(n)
-        print(i, time.time() - started)
-
-
-def test_straight_xxx():
-    import time
-    for i in (10, 20, 30, 40, 50, 60):
-        started = time.time()
-        n = tuple_to_graph(tentacle(i))
-        subtree.combinations(n)
-        print(i, time.time() - started)
+def haircomb(n, k):
+    """Total ~n edges: long main spine, with k-length ribs protruding from each vertebrae"""
+    rv = ()
+    for i in range(n // (k + 1)):
+        rv = (rv, tentacle(k))
+    return rv
 
 
 def test_straight_1000(benchmark):
@@ -72,6 +62,59 @@ def test_straight_1000(benchmark):
     benchmark(subtree.combinations, n)
 
 
-def fixme_straight_999(benchmark):
+def test_straight_999(benchmark):
     n = tuple_to_graph(tentacle(99))
+    benchmark(subtree.combinations, n)
+
+
+def test_short_haircomb_1000(benchmark):
+    n = tuple_to_graph(haircomb(1000, 1))
+    benchmark(subtree.combinations, n)
+
+
+def test_med_haircomb_1000(benchmark):
+    n = tuple_to_graph(haircomb(1000, 5))
+    benchmark(subtree.combinations, n)
+
+
+def test_long_haircomb_1000(benchmark):
+    n = tuple_to_graph(haircomb(1000, 30))
+    benchmark(subtree.combinations, n)
+
+
+def test_hub4(benchmark):
+    spoke = tentacle(250)
+    t = (spoke, spoke, spoke, spoke)
+    n = tuple_to_graph(t)
+    benchmark(subtree.combinations, n)
+
+
+def test_hub4_uneven(benchmark):
+    spoke = tentacle(250)
+    t = (spoke, spoke, spoke, tentacle(251))
+    n = tuple_to_graph(t)
+    benchmark(subtree.combinations, n)
+
+
+def unique_trees():
+    """ A random tree composed of unique subtrees, total weight ~1000 """
+    import random
+    basics = [tentacle(i) for i in range(10)]
+    level2 = []
+    for i, b in enumerate(basics):
+        for bb in basics[i:]:
+            level2.append((b, bb))
+    level3 = {tuple(random.sample(level2, 5)) for i in range(20)}
+    return tuple(random.sample(level3, 17))
+
+
+def test_unique_trees(benchmark):
+    t = unique_trees()
+    n = tuple_to_graph(t)
+    benchmark(subtree.combinations, n)
+
+
+def test_unique_trees_long(benchmark):
+    t = (unique_trees(), tentacle(20), tentacle(21))
+    n = tuple_to_graph(t)
     benchmark(subtree.combinations, n)
