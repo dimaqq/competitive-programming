@@ -7,7 +7,7 @@ def nodes1():
     return subtree.graph("""4
                             1 2
                             1 3
-                            1 4""".strip().splitlines())
+                            1 4""".strip())
 
 
 @pytest.fixture
@@ -15,7 +15,7 @@ def nodes2():
     return subtree.graph("""4
                             1 2
                             2 3
-                            3 4""".strip().splitlines())
+                            3 4""".strip())
 
 
 @pytest.fixture
@@ -25,7 +25,7 @@ def nodes3():
                             1 3
                             1 4
                             2 5
-                            2 6""".strip().splitlines())
+                            2 6""".strip())
 
 
 @pytest.fixture
@@ -39,7 +39,7 @@ def nodes4():
                             2 8
                             9 5
                             8 6
-                            10 6""".strip().splitlines())
+                            10 6""".strip())
 
 
 def test_com(nodes1, nodes2, nodes3, nodes4):

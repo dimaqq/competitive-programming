@@ -112,7 +112,7 @@ def six_in_line():
                     3 4
                     4 5
                     5 6
-                    6 7""".strip().splitlines())
+                    6 7""".strip())
 
 
 def test_com_lines(six_in_line):

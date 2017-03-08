@@ -11,7 +11,7 @@ def graph(inp):
     nodes = dict()
     N = None
 
-    for line in inp:
+    for line in inp.splitlines():
         # special handling for first line of input -- seed vertices
         if N is None:
             N = int(line.strip())
@@ -143,3 +143,10 @@ def enum(limits, shape, _cache=dict()):
             tot *= acc
         _cache[key] = tot
     return _cache[key]
+
+
+if __name__ == "__main__":
+    import sys
+    g = graph(sys.stdin.read())
+    rv = combinations(g)
+    print(rv % (10 ** 9 + 7))
