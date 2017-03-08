@@ -1,6 +1,6 @@
 import pytest
 from test_inputs import nodes1
-from subtree import tup, enum, tree, graph, longest_trace_from, longest_path, combinations
+from subtree import tup, enum, tree, graph, trace_from, diameter, combinations
 
 
 def test_enum_simple():
@@ -128,12 +128,12 @@ def test_build(nodes1):
 
 
 def test_ltf(nodes1):
-    assert len(longest_trace_from(nodes1, 1)) == 2  # e.g. (1, 2)
-    assert len(longest_trace_from(nodes1, 2)) == 3  # e.g. (2, 1, 3)
+    assert len(trace_from(nodes1, 1)) == 2  # e.g. (1, 2)
+    assert len(trace_from(nodes1, 2)) == 3  # e.g. (2, 1, 3)
 
 
 def test_lp(nodes1):
-    assert len(longest_path(nodes1)) == 3  # e.g. (2, 1, 3)
+    assert len(diameter(nodes1)) == 3  # e.g. (2, 1, 3)
 
 
 def test_tree(nodes1):

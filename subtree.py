@@ -27,19 +27,20 @@ def graph(inp):
     return nodes
 
 
-def longest_trace_from(nodes, start, exclude=None):
-    traces = [longest_trace_from(nodes, n, exclude=start) for n in nodes[start] if n is not exclude]
+def trace_from(nodes, start, exclude=None):
+    """ Given a starting point, find longest trace through the tree/graph """
+    traces = [trace_from(nodes, n, exclude=start) for n in nodes[start] if n is not exclude]
     return (start,) + max(traces, key=len, default=())
 
 
-def longest_path(nodes):
+def diameter(nodes):
     """ Find a longest path in the graph:
         Start with a random node, and find a longest trace from it.
         Re-start from the end of that trace and find a lognest trace.
         This will be the longest path in a graph, if graph is a tree. """
     random = next(iter(nodes))
-    start = longest_trace_from(nodes, random)[-1]
-    return longest_trace_from(nodes, start)
+    start = trace_from(nodes, random)[-1]
+    return trace_from(nodes, start)
 
 
 def tree(nodes, start, exclude=None):
@@ -48,7 +49,7 @@ def tree(nodes, start, exclude=None):
 
 
 class tup(tuple):
-    """ Tree as a tuple of tuple of ...  For example, *--*--* is (((), ), )
+    """ Tree as a tuple of tuples of tuples of ...  For example, o->o->o becomes (((), ), )
         Data structure is immutable, thus trees can be referred to by Python builtin hash
     """
     def __new__(cls, arg=()):
@@ -63,7 +64,7 @@ class tup(tuple):
 
 
 def combinations(nodes):
-    path = longest_path(nodes)
+    path = diameter(nodes)
     L = len(path)
     C = L // 2
     root = path[L // 2]  # left side is longest (or equal)
