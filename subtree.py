@@ -4,6 +4,10 @@ sys.setrecursionlimit(2300)  # for largest input 1000
 
 
 def graph(inp):
+    """ Given text representation of input, compute graph:
+        Graph is a dictionary of nodes (name -> node)
+        Node is a set of edges (-> other node name)
+    """
     nodes = dict()
     N = None
 
@@ -24,8 +28,8 @@ def graph(inp):
 
 
 def longest_trace_from(nodes, start, exclude=None):
-    traces = [longest_trace_from(nodes, n, exclude=start) for n in nodes[start] if n is not exclude] + [()]
-    return (start,) + max(traces, key=len)
+    traces = [longest_trace_from(nodes, n, exclude=start) for n in nodes[start] if n is not exclude]
+    return (start,) + max(traces, key=len, default=())
 
 
 def longest_path(nodes):
@@ -33,8 +37,6 @@ def longest_path(nodes):
         Start with a random node, and find a longest trace from it.
         Re-start from the end of that trace and find a lognest trace.
         This will be the longest path in a graph, if graph is a tree. """
-    if not nodes:
-        return ()
     random = next(iter(nodes))
     start = longest_trace_from(nodes, random)[-1]
     return longest_trace_from(nodes, start)
@@ -46,9 +48,11 @@ def tree(nodes, start, exclude=None):
 
 
 class tup(tuple):
+    """ Tree as a tuple of tuple of ...  For example, *--*--* is (((), ), )
+        Data structure is immutable, thus trees can be referred to by Python builtin hash
+    """
     def __new__(cls, arg=()):
         rv = super().__new__(cls, arg)
-        # rv = super().__new__(cls, sorted(arg))
         rv.height = (1 + min((t.height[0] for t in rv), default=-1),
                      1 + max((t.height[1] for t in rv), default=-1))
         rv.edges = len(rv) + sum(t.edges for t in rv)
@@ -115,12 +119,13 @@ def enum(limits, shape, _cache=dict()):
     assert r
     assert b
     assert shape
-    if (r, b, shape) not in _cache:
+    key = r, b, hash(shape)
+    if key not in _cache:
         tot = 1
         for subtree in shape:
             acc = 0
             for sublimit in ((r - 1, b), (r, b - 1)):
                 acc += enum(sublimit, subtree)
             tot *= acc
-        _cache[(r, b, shape)] = tot
-    return _cache[(r, b, shape)]
+        _cache[key] = tot
+    return _cache[key]
