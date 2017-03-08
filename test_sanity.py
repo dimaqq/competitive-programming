@@ -1,6 +1,6 @@
 import pytest
 from test_inputs import nodes, sample_data1
-from subtree import tup, enum, shape3, build_graph, longest_trace_from, longest_path, combinations
+from subtree import tup, enum, tree, build_graph, longest_trace_from, longest_path, combinations
 
 
 def test_enum_simple():
@@ -134,10 +134,10 @@ def test_lp(nodes):
     assert len(longest_path(nodes)) == 3  # e.g. (2, 1, 3)
 
 
-def test_shape3(nodes):
-    assert shape3(nodes, 3, exclude=1) == ()  # 3 is leaf
-    assert shape3(nodes, 1, exclude=3) == ((), ())  # 1 has two leaf childred (2, 4); 3 is excluded
-    tt = shape3(nodes, 1, exclude=3)
+def test_tree(nodes):
+    assert tree(nodes, 3, exclude=1) == ()  # 3 is leaf
+    assert tree(nodes, 1, exclude=3) == ((), ())  # 1 has two leaf childred (2, 4); 3 is excluded
+    tt = tree(nodes, 1, exclude=3)
     assert tt.height == (1, 1)
     assert tt[0].height == (0, 0)
     assert tt[1].height == (0, 0)

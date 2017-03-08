@@ -40,8 +40,8 @@ def longest_path(nodes):
     return longest_trace_from(nodes, start)
 
 
-def shape3(nodes, start, exclude=None):
-    parts = [shape3(nodes, n, exclude=start) for n in nodes[start] if n is not exclude]
+def tree(nodes, start, exclude=None):
+    parts = [tree(nodes, n, exclude=start) for n in nodes[start] if n is not exclude]
     return tup(parts)
 
 
@@ -62,15 +62,15 @@ def combinations(nodes):
     root = path[L // 2]  # left side is longest (or equal)
     if L % 2:
         # longest path has odd number of nodes, thus even number of edges
-        tree = shape3(nodes, root)
-        return sum(enum(limits, tree) for limits in zip(range(C + 1), reversed(range(C + 1))))
+        thetree = tree(nodes, root)
+        return sum(enum(limits, thetree) for limits in zip(range(C + 1), reversed(range(C + 1))))
     else:
         # longest path has even number of nodes, odd number of edges
         left = path[L // 2 - 1]
         # virtual tree (root->left->left's children)
-        left_tree = tup([shape3(nodes, left, exclude=root)])
+        left_tree = tup([tree(nodes, left, exclude=root)])
         # everything else (root->(children - left))
-        right_tree = shape3(nodes, root, exclude=left)
+        right_tree = tree(nodes, root, exclude=left)
         assert left_tree.height[1] == C
         assert right_tree.height[1] == C - 1
         lg = [i // 2 for i in range(1, C * 2 + 2)]
@@ -95,7 +95,7 @@ def combinations(nodes):
 
 def virtual_tree(nodes, root, branch):
     """ virtual tree rooted at root, where root has only 1 branch, branch """
-    return tup([shape3(nodes, branch, exclude=root)])
+    return tup([tree(nodes, branch, exclude=root)])
 
 
 def enum(limits, shape, _cache=dict()):
@@ -120,8 +120,7 @@ def enum(limits, shape, _cache=dict()):
         for subtree in shape:
             acc = 0
             for sublimit in ((r - 1, b), (r, b - 1)):
-                x = enum(sublimit, subtree)
-                acc += x
+                acc += enum(sublimit, subtree)
             tot *= acc
         _cache[(r, b, shape)] = tot
     return _cache[(r, b, shape)]
