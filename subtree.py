@@ -1,8 +1,6 @@
 # doc: git.io/vy4co
 import sys
 sys.setrecursionlimit(2300)  # for largest input 1000
-from operator import mul
-from functools import reduce
 
 
 def build_graph(inp):
@@ -100,7 +98,7 @@ def virtual_tree(nodes, root, branch):
     return tuplex([shape3(nodes, branch, exclude=root)])
 
 
-def enum(limits, shape):
+def enum(limits, shape, _cache=dict()):
     limits = tuple(sorted(limits))  # doesn't matter which is red or bla
     r, b = limits
     low, high = shape.height
@@ -117,16 +115,13 @@ def enum(limits, shape):
     assert r
     assert b
     assert shape
-    tot = 1
-    for subtree in shape:
-        acc = 0
-        for sublimit in ((r - 1, b), (r, b - 1)):
-            x = enum(sublimit, subtree)
-            acc += x
-        tot *= acc
-    return tot
-
-    rv = sum(reduce(mul, (enum(sublimit, subtree) for subtree in shape)) for sublimit in ((r - 1, b), (r, b - 1)))
-
-    rv = sum(reduce(mul, (enum(sublimit, subtree) for subtree in shape)) for sublimit in ((r - 1, b), (r, b - 1)))
-    return rv
+    if (r, b, shape) not in _cache:
+        tot = 1
+        for subtree in shape:
+            acc = 0
+            for sublimit in ((r - 1, b), (r, b - 1)):
+                x = enum(sublimit, subtree)
+                acc += x
+            tot *= acc
+        _cache[(r, b, shape)] = tot
+    return _cache[(r, b, shape)]
