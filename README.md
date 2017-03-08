@@ -1,11 +1,10 @@
 # competitive-programming
 
-( Contest name withheld )
+Contest name withheld; Link to self: https://git.io/vy4co; Comments are welcome!
 
-( Link to self: https://git.io/vy4co )
 
-Outline:
-* determing tree diameter
+## Algorithm Outline
+* determine tree diameter
 * hang the tree by the middle of diameter path
 * now it's a coloring problem
 * extra consideration when diameter comprises odd number of edges

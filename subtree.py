@@ -38,14 +38,14 @@ def diameter(nodes):
         Start with a random node, and find a longest trace from it.
         Re-start from the end of that trace and find a lognest trace.
         This will be the longest path in a graph, if graph is a tree. """
-    random = next(iter(nodes))
-    start = trace_from(nodes, random)[-1]
-    return trace_from(nodes, start)
+    start = next(iter(nodes))
+    restart = trace_from(nodes, start)[-1]
+    return trace_from(nodes, restart)
 
 
 def tree(nodes, start, exclude=None):
-    parts = [tree(nodes, n, exclude=start) for n in nodes[start] if n is not exclude]
-    return tup(parts)
+    """ Recreate a tree as tuple of tuple of ... """
+    return tup([tree(nodes, n, exclude=start) for n in nodes[start] if n is not exclude])
 
 
 class tup(tuple):
@@ -64,23 +64,33 @@ class tup(tuple):
 
 
 def combinations(nodes):
+    """ Count up possible arrow combinations for a graph, see README.md """
     path = diameter(nodes)
-    L = len(path)
-    C = L // 2
-    root = path[L // 2]  # left side is longest (or equal)
-    if L % 2:
+    D = len(path)
+    C = D // 2
+    root = path[D // 2]  # left side is longest (or equal)
+    if D % 2:
         # longest path has odd number of nodes, thus even number of edges
+        # thus "left" and "right" sides are equal length, and C == D / 2
+        # this places strict constraints on coloring longest branches:
+        # these are length C and color uptions sum up to C
         thetree = tree(nodes, root)
         return sum(enum(limits, thetree) for limits in zip(range(C + 1), reversed(range(C + 1))))
     else:
         # longest path has even number of nodes, odd number of edges
-        left = path[L // 2 - 1]
-        # virtual tree (root->left->left's children)
+        # thus, C == (D + 1) / 2
+        # this allows more possibilities when coloring branches:
+        # e.g. left branch length C, color options C; right branch length C-1, color options C
+        # or left branch length C, color opionts C+1; right branch length C-1, color options C-1
+        left = path[D // 2 - 1]
+        # left branch as a virtual tree (root->left->left's children)
         left_tree = tup([tree(nodes, left, exclude=root)])
-        # everything else (root->(children - left))
+        # all right branches (root->(children - left))
         right_tree = tree(nodes, root, exclude=left)
+
         assert left_tree.height[1] == C
         assert right_tree.height[1] == C - 1
+
         lg = [i // 2 for i in range(1, C * 2 + 2)]
         ll = list(zip(lg, reversed(lg)))
         rg = [i // 2 for i in range(C * 2 + 1)]
@@ -91,6 +101,7 @@ def combinations(nodes):
         for i in range(len(ll)):
             left_limits = ll[i]
             right_limits = rl[i]
+            # See README.md for explanation
             if sum(left_limits) > C:
                 neigh = ll[i - 1: i] + ll[i + 1: i + 2]
                 lrv = lrvs[left_limits] = enum(left_limits, left_tree) - sum(enum(ne, left_tree) for ne in neigh)
