@@ -119,7 +119,7 @@ def enum(limits, shape, _cache=dict()):
     assert r
     assert b
     assert shape
-    key = r, b, hash(shape)
+    key = hash((r, b, shape))
     if key not in _cache:
         tot = 1
         for subtree in shape:
