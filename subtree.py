@@ -1,4 +1,6 @@
 # doc: git.io/vy4co
+import sys
+sys.setrecursionlimit(2300)  # for largest input 1000
 from operator import mul
 from functools import reduce
 
