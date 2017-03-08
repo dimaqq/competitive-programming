@@ -103,6 +103,7 @@ def combinations(nodes):
             right_limits = rl[i]
             # See README.md for explanation
             if sum(left_limits) > C:
+                assert sum(left_limits) == C + 1
                 # Compute strict colorings
                 # I.e. those that use exactly (R, B) colors (not fewer)
                 neigh = ll[i - 1: i] + ll[i + 1: i + 2]
@@ -112,11 +113,6 @@ def combinations(nodes):
             rrv = enum(right_limits, right_tree)
             tot += lrv * rrv
         return tot
-
-
-def virtual_tree(nodes, root, branch):
-    """ virtual tree rooted at root, where root has only 1 branch, branch """
-    return tup([tree(nodes, branch, exclude=root)])
 
 
 def enum(limits, shape, _cache=dict()):
