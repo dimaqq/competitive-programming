@@ -83,8 +83,10 @@ def combinations(nodes):
         # e.g. left branch length C, color options C; right branch length C-1, color options C
         # or left branch length C, color opionts C+1; right branch length C-1, color options C-1
         left = path[D // 2 - 1]
+
         # left branch as a virtual tree (root->left->left's children)
         left_tree = tup([tree(nodes, left, exclude=root)])
+
         # all right branches (root->(children - left))
         right_tree = tree(nodes, root, exclude=left)
 
@@ -96,18 +98,18 @@ def combinations(nodes):
         rg = [i // 2 for i in range(C * 2 + 1)]
         rl = list(zip(rg, reversed(rg)))
         tot = 0
-        lrvs = dict()
-        rrvs = dict()
         for i in range(len(ll)):
             left_limits = ll[i]
             right_limits = rl[i]
             # See README.md for explanation
             if sum(left_limits) > C:
+                # Compute strict colorings
+                # I.e. those that use exactly (R, B) colors (not fewer)
                 neigh = ll[i - 1: i] + ll[i + 1: i + 2]
-                lrv = lrvs[left_limits] = enum(left_limits, left_tree) - sum(enum(ne, left_tree) for ne in neigh)
+                lrv = enum(left_limits, left_tree) - sum(enum(ne, left_tree) for ne in neigh)
             else:
-                lrv = lrvs[left_limits] = enum(left_limits, left_tree)
-            rrv = rrvs[right_limits] = enum(right_limits, right_tree)
+                lrv = enum(left_limits, left_tree)
+            rrv = enum(right_limits, right_tree)
             tot += lrv * rrv
         return tot
 

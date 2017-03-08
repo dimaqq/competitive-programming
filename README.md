@@ -1,7 +1,4 @@
-# competitive-programming
-
 Contest name withheld; Link to self: https://git.io/vy4co; Comments are welcome!
-
 
 ## Algorithm Outline
 * determine tree diameter
