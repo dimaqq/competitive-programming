@@ -3,7 +3,7 @@ import sys
 sys.setrecursionlimit(2300)  # for largest input 1000
 
 
-def build_graph(inp):
+def graph(inp):
     nodes = dict()
     N = None
 

@@ -4,6 +4,8 @@ import subtree
 
 
 def tuple_to_list(t):
+    """ Helper to rebuild input representation from tuple tree
+        Output as an array of edges """
     names = itertools.count(1)
     edges = list()
 
@@ -18,6 +20,7 @@ def tuple_to_list(t):
 
 
 def tuple_to_graph(t):
+    """ Outout as a dictionary or sets """
     edges = tuple_to_list(t)
     rv = {i: set() for i in range(1, len(edges) + 2)}
     for i, k in edges:
@@ -27,6 +30,7 @@ def tuple_to_graph(t):
 
 
 def tuple_to_text(t):
+    """ Output text that can be fed to stdin """
     edges = tuple_to_list(t)
     return "%s\n%s" % (len(edges) + 1, "\n".join(" ".join(map(str, e)) for e in edges))
 
@@ -42,6 +46,7 @@ def test_tuple_to_text():
 
 
 def tentacle(n):
+    """ narrow branch / finger """
     rv = ()
     for i in range(n):
         rv = (rv, )
@@ -57,7 +62,6 @@ def haircomb(n, k):
 
 
 def test_straight_1000(benchmark):
-    # FIXME python stack limit is 1000, recursive build and diameter determination fail here
     n = tuple_to_graph(tentacle(100))
     benchmark(subtree.combinations, n)
 
@@ -72,6 +76,11 @@ def test_short_haircomb_1000(benchmark):
     benchmark(subtree.combinations, n)
 
 
+def test_short_haircomb_1001(benchmark):
+    n = tuple_to_graph(haircomb(1001, 1))
+    benchmark(subtree.combinations, n)
+
+
 def test_med_haircomb_1000(benchmark):
     n = tuple_to_graph(haircomb(1000, 5))
     benchmark(subtree.combinations, n)
@@ -83,6 +92,7 @@ def test_long_haircomb_1000(benchmark):
 
 
 def test_hub4(benchmark):
+    """ Wheel hub with 4 long spokes """
     spoke = tentacle(250)
     t = (spoke, spoke, spoke, spoke)
     n = tuple_to_graph(t)
@@ -90,6 +100,7 @@ def test_hub4(benchmark):
 
 
 def test_hub4_uneven(benchmark):
+    """ Wheel hub with 4 long spokes, where one is longer than others """
     spoke = tentacle(250)
     t = (spoke, spoke, spoke, tentacle(251))
     n = tuple_to_graph(t)

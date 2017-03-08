@@ -1,6 +1,6 @@
 import pytest
-from test_inputs import nodes, sample_data1
-from subtree import tup, enum, tree, build_graph, longest_trace_from, longest_path, combinations
+from test_inputs import nodes1
+from subtree import tup, enum, tree, graph, longest_trace_from, longest_path, combinations
 
 
 def test_enum_simple():
@@ -106,38 +106,40 @@ def test_enumerate(leaf_shape, I_shape, Y_shape):
 @pytest.fixture
 def six_in_line():
     """ 1 line, 6 edges (7 nodes) """
-    nodes = build_graph("""7
-                                  1 2
-                                  2 3
-                                  3 4
-                                  4 5
-                                  5 6
-                                  6 7""".strip().splitlines())
-    return nodes
+    return graph("""7
+                    1 2
+                    2 3
+                    3 4
+                    4 5
+                    5 6
+                    6 7""".strip().splitlines())
 
 
 def test_com_lines(six_in_line):
     assert combinations(six_in_line) == 20  # C(3,6)
 
 
-def test_build(nodes):
-    # print(nodes)  # visual inspection
-    pass
+def test_build(nodes1):
+    assert len(nodes1) == 4
+    assert len(nodes1[1]) == 3
+    assert len(nodes1[2]) == 1
+    assert len(nodes1[3]) == 1
+    assert len(nodes1[4]) == 1
 
 
-def test_ltf(nodes):
-    assert len(longest_trace_from(nodes, 1)) == 2  # e.g. (1, 2)
-    assert len(longest_trace_from(nodes, 2)) == 3  # e.g. (2, 1, 3)
+def test_ltf(nodes1):
+    assert len(longest_trace_from(nodes1, 1)) == 2  # e.g. (1, 2)
+    assert len(longest_trace_from(nodes1, 2)) == 3  # e.g. (2, 1, 3)
 
 
-def test_lp(nodes):
-    assert len(longest_path(nodes)) == 3  # e.g. (2, 1, 3)
+def test_lp(nodes1):
+    assert len(longest_path(nodes1)) == 3  # e.g. (2, 1, 3)
 
 
-def test_tree(nodes):
-    assert tree(nodes, 3, exclude=1) == ()  # 3 is leaf
-    assert tree(nodes, 1, exclude=3) == ((), ())  # 1 has two leaf childred (2, 4); 3 is excluded
-    tt = tree(nodes, 1, exclude=3)
+def test_tree(nodes1):
+    assert tree(nodes1, 3, exclude=1) == ()  # 3 is leaf
+    assert tree(nodes1, 1, exclude=3) == ((), ())  # 1 has two leaf childred (2, 4); 3 is excluded
+    tt = tree(nodes1, 1, exclude=3)
     assert tt.height == (1, 1)
     assert tt[0].height == (0, 0)
     assert tt[1].height == (0, 0)
