@@ -79,9 +79,6 @@ def combinations(nodes):
         ll = list(zip(lg, reversed(lg)))
         rg = [i // 2 for i in range(C * 2 + 1)]
         rl = list(zip(rg, reversed(rg)))
-        print("-" * 20)
-        print(ll)
-        print(rl)
         tot = 0
         lrvs = dict()
         rrvs = dict()
@@ -94,8 +91,6 @@ def combinations(nodes):
             else:
                 lrv = lrvs[left_limits] = enum(left_limits, left_tree)
             rrv = rrvs[right_limits] = enum(right_limits, right_tree)
-            print(left_limits, "nw"[sum(left_limits) > C], lrv, right_limits, "nw"[sum(right_limits) >= C], rrv)
-            # FIXME strict mode
             tot += lrv * rrv
         return tot
 
@@ -105,15 +100,6 @@ def virtual_tree(nodes, root, branch):
     return tuplex([shape3(nodes, branch, exclude=root)])
 
 
-def logged(f):
-    def inner(l, s):
-        rv = f(l, s)
-        # print(l, s, "=>", rv)
-        return rv
-    return inner
-
-
-@logged
 def enum(limits, shape):
     limits = tuple(sorted(limits))  # doesn't matter which is red or bla
     r, b = limits
@@ -175,22 +161,20 @@ def test_enum_simple():
 def test_enum_simple_v():
     vthree = tuplex([tuplex([tuplex([tuplex()])]),
                      tuplex([tuplex([tuplex()])])])  # 6 edges
-    # assert enum((0, 3), vthree) == 1
-    # assert enum((3, 0), vthree) == 1
-    print("start")
+    assert enum((0, 3), vthree) == 1
+    assert enum((3, 0), vthree) == 1
     assert enum((1, 2), vthree) == 9
-    # assert enum((2, 1), vthree) == 9
+    assert enum((2, 1), vthree) == 9
 
 
 def test_enum_simple_w():
     wthree = tuplex([tuplex([tuplex([tuplex()])]),
                      tuplex([tuplex([tuplex()])]),
                      tuplex([tuplex([tuplex()])])])  # 6 edges
-    # assert enum((0, 3), vthree) == 1
-    # assert enum((3, 0), vthree) == 1
-    print("start")
+    assert enum((0, 3), vthree) == 1
+    assert enum((3, 0), vthree) == 1
     assert enum((1, 2), wthree) == 27
-    # assert enum((2, 1), vthree) == 9
+    assert enum((2, 1), vthree) == 9
 
 
 def test_enum(leaf_shape, I_shape, Y_shape):
@@ -248,8 +232,8 @@ def test_enumerate(leaf_shape, I_shape, Y_shape):
     assert enum((1, 1), leaf_shape) == 1
     assert enum((4, 4), leaf_shape) == 1
 
-    # assert not enum(-1, 1, leaf_shape)
-    # assert not enum(1, -1, leaf_shape)
+    assert not enum(-1, 1, leaf_shape)
+    assert not enum(1, -1, leaf_shape)
 
     assert enum((4, 4), I_shape) == 2
 

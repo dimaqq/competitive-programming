@@ -48,6 +48,24 @@ def tentacle(n):
     return rv
 
 
+def test_straight_yyy():
+    import time
+    for i in (11, 21, 31, 41, 51, 61):
+        started = time.time()
+        n = tuple_to_graph(tentacle(i))
+        subtree.combinations(n)
+        print(i, time.time() - started)
+
+
+def test_straight_xxx():
+    import time
+    for i in (10, 20, 30, 40, 50, 60):
+        started = time.time()
+        n = tuple_to_graph(tentacle(i))
+        subtree.combinations(n)
+        print(i, time.time() - started)
+
+
 def test_straight_1000(benchmark):
     # FIXME python stack limit is 1000, recursive build and diameter determination fail here
     n = tuple_to_graph(tentacle(100))
