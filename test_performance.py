@@ -1,3 +1,5 @@
+import sys
+sys.setrecursionlimit(2100)  # for largest input 1000
 import pytest
 import random
 import itertools
@@ -129,7 +131,15 @@ def test_unique_trees_long(benchmark):
     t = (unique_trees(), tentacle(20), tentacle(21))
     n = tuple_to_graph(t)
     benchmark(subtree.combinations, n)
-    # print("cache size", len(subtree.enum.__defaults__[0]))
+
+
+def test_unique_trees_text(benchmark):
+    t = (unique_trees(), tentacle(20), tentacle(21))
+    text = tuple_to_text(t)
+    def test():
+        g = subtree.graph(text)
+        subtree.combinations(g)
+    benchmark(test)
 
 
 def test_unbalanced_tree(benchmark):

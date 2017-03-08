@@ -1,8 +1,4 @@
 # doc: git.io/vy4co
-import sys
-sys.setrecursionlimit(2300)  # for largest input 1000
-
-
 def graph(inp):
     """ Given text representation of input, compute graph:
         Graph is a dictionary of nodes (name -> node)
@@ -29,7 +25,7 @@ def graph(inp):
 
 def trace_from(nodes, start, exclude=None):
     """ Given a starting point, find longest trace through the tree/graph """
-    traces = [trace_from(nodes, n, exclude=start) for n in nodes[start] if n is not exclude]
+    traces = [trace_from(nodes, n, exclude=start) for n in nodes[start] if n != exclude]
     return (start,) + max(traces, key=len, default=())
 
 
@@ -45,7 +41,7 @@ def diameter(nodes):
 
 def tree(nodes, start, exclude=None):
     """ Recreate a tree as tuple of tuple of ... """
-    return tup([tree(nodes, n, exclude=start) for n in nodes[start] if n is not exclude])
+    return tup([tree(nodes, n, exclude=start) for n in nodes[start] if n != exclude])
 
 
 class tup(tuple):
@@ -147,6 +143,7 @@ def enum(limits, shape, _cache=dict()):
 
 if __name__ == "__main__":
     import sys
+    sys.setrecursionlimit(2100)  # for largest input 1000
     g = graph(sys.stdin.read())
     rv = combinations(g)
     print(rv % (10 ** 9 + 7))
