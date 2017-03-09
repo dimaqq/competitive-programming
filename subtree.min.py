@@ -47,10 +47,8 @@ def combinations(nodes):
         for i in range(len(ll)):
             left_limits = ll[i]
             right_limits = rl[i]
-            if sum(left_limits) > C:
-                lrv = enum(left_limits, left_tree) - sum(enum(ne, left_tree) for ne in ll[i - 1: i] + ll[i + 1: i + 2])
-            else:
-                lrv = enum(left_limits, left_tree)
+            lrv = enum(left_limits, left_tree) - sum(enum(ne, left_tree) for ne in ll[i - 1: i] + ll[i + 1: i + 2])\
+                if sum(left_limits) > C else enum(left_limits, left_tree)
             rrv = enum(right_limits, right_tree)
             tot += lrv * rrv
         return tot
