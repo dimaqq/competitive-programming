@@ -143,7 +143,7 @@ def enum(limits, shape, _cache=dict()):
 
 if __name__ == "__main__":
     import sys
-    sys.setrecursionlimit(2100)  # for largest input 1000
+    sys.setrecursionlimit(2100)  # 2*N + const
     g = graph(sys.stdin.read())
     rv = combinations(g)
     print(rv % (10 ** 9 + 7))
