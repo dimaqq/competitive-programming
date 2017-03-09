@@ -1,4 +1,6 @@
-Contest name withheld; Link to self: https://git.io/vy4co; Comments are welcome!
+Contest name withheld; Link to self: https://git.io/vy4co
+
+Comments are welcome! P.S. hire me! ;-)
 
 ## Algorithm Outline
 * determine tree diameter
