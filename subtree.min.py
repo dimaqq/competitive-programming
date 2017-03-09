@@ -2,7 +2,6 @@
 def graph(inp):
     nodes = dict()
     N = None
-
     for line in inp.splitlines():
         if N is None:
             N = int(line.strip())
@@ -14,21 +13,11 @@ def graph(inp):
         nodes[k].add(i)
     return nodes
 
-
-def trace_from(nodes, start, exclude=None):
-    traces = [trace_from(nodes, n, exclude=start) for n in nodes[start] if n != exclude]
-    return (start,) + max(traces, key=len, default=())
-
-
-def diameter(nodes):
-    start = next(iter(nodes))
-    restart = trace_from(nodes, start)[-1]
-    return trace_from(nodes, restart)
-
+def trace(nodes, start, exclude=None):
+    return (start,) + max([trace(nodes, n, exclude=start) for n in nodes[start] if n != exclude], key=len, default=())
 
 def tree(nodes, start, exclude=None):
     return tup([tree(nodes, n, exclude=start) for n in nodes[start] if n != exclude])
-
 
 class tup(tuple):
     def __new__(cls, arg=()):
@@ -38,9 +27,8 @@ class tup(tuple):
         rv.edges = len(rv) + sum(t.edges for t in rv)
         return rv
 
-
 def combinations(nodes):
-    path = diameter(nodes)
+    path = trace(nodes, trace(nodes, next(iter(nodes)))[-1])
     D = len(path)
     C = D // 2
     root = path[D // 2] 
@@ -51,7 +39,6 @@ def combinations(nodes):
         left = path[D // 2 - 1]
         left_tree = tup([tree(nodes, left, exclude=root)])
         right_tree = tree(nodes, root, exclude=left)
-
         lg = [i // 2 for i in range(1, C * 2 + 2)]
         ll = list(zip(lg, reversed(lg)))
         rg = [i // 2 for i in range(C * 2 + 1)]
@@ -61,22 +48,17 @@ def combinations(nodes):
             left_limits = ll[i]
             right_limits = rl[i]
             if sum(left_limits) > C:
-                neigh = ll[i - 1: i] + ll[i + 1: i + 2]
-                lrv = enum(left_limits, left_tree) - sum(enum(ne, left_tree) for ne in neigh)
+                lrv = enum(left_limits, left_tree) - sum(enum(ne, left_tree) for ne in ll[i - 1: i] + ll[i + 1: i + 2])
             else:
                 lrv = enum(left_limits, left_tree)
             rrv = enum(right_limits, right_tree)
             tot += lrv * rrv
         return tot
 
-
 def enum(limits, shape, _cache=dict()):
     limits = tuple(sorted(limits))
     r, b = limits
     low, high = shape.height
-    assert low <= high
-    assert r + b >= high
-    assert r <= b
 
     if r >= high:
         return 2 ** shape.edges
@@ -84,9 +66,6 @@ def enum(limits, shape, _cache=dict()):
     if 0 in limits:
         return 1
 
-    assert r
-    assert b
-    assert shape
     key = hash((r, b, shape))
     if key not in _cache:
         tot = 1
@@ -97,7 +76,6 @@ def enum(limits, shape, _cache=dict()):
             tot *= acc
         _cache[key] = tot
     return _cache[key]
-
 
 import sys
 sys.setrecursionlimit(99999)
