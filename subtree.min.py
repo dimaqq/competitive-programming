@@ -1,57 +1,37 @@
 # doc: git.io/vy4co
 def graph(inp):
-    """ Given text representation of input, compute graph:
-        Graph is a dictionary of nodes (name -> node)
-        Node is a set of edges (-> other node name)
-    """
     nodes = dict()
     N = None
 
     for line in inp.splitlines():
-        # special handling for first line of input -- seed vertices
         if N is None:
             N = int(line.strip())
             for k in range(1, N + 1):
                 nodes[k] = set()
             continue
-
-        # create edges
         i, k = map(int, line.split())
         nodes[i].add(k)
         nodes[k].add(i)
-
     return nodes
 
 
 def trace_from(nodes, start, exclude=None):
-    """ Given a starting point, find longest trace through the tree/graph """
     traces = [trace_from(nodes, n, exclude=start) for n in nodes[start] if n != exclude]
     return (start,) + max(traces, key=len, default=())
 
 
 def diameter(nodes):
-    """ Find a longest path in the graph:
-        Start with a random node, and find a longest trace from it.
-        Re-start from the end of that trace and find a lognest trace.
-        This will be the longest path in a graph, if graph is a tree. """
     start = next(iter(nodes))
     restart = trace_from(nodes, start)[-1]
     return trace_from(nodes, restart)
 
 
 def tree(nodes, start, exclude=None):
-    """ Recreate a tree as tuple of tuple of ... """
     return tup([tree(nodes, n, exclude=start) for n in nodes[start] if n != exclude])
 
 
 class tup(tuple):
-    """ Tree as a tuple of tuples of tuples of ...  For example, o->o->o becomes (((), ), )
-        Data structure is immutable, thus trees can be referred to by Python builtin hash
-    """
     def __new__(cls, arg=()):
-        # `sorted(arg)` can be used below, as order of subtrees is irrelevant
-        # sorting subtrees makes partial result cache smaller,
-        # however extra processing proved a larger factor than cache size
         rv = super().__new__(cls, arg)
         rv.height = (1 + min((t.height[0] for t in rv), default=-1),
                      1 + max((t.height[1] for t in rv), default=-1))
@@ -60,34 +40,17 @@ class tup(tuple):
 
 
 def combinations(nodes):
-    """ Count up possible arrow combinations for a graph, see README.md """
     path = diameter(nodes)
     D = len(path)
     C = D // 2
-    root = path[D // 2]  # left side is longest (or equal)
+    root = path[D // 2] 
     if D % 2:
-        # longest path has odd number of nodes, thus even number of edges
-        # thus "left" and "right" sides are equal length, and C == D / 2
-        # this places strict constraints on coloring longest branches:
-        # these are length C and color uptions sum up to C
         thetree = tree(nodes, root)
         return sum(enum(limits, thetree) for limits in zip(range(C + 1), reversed(range(C + 1))))
     else:
-        # longest path has even number of nodes, odd number of edges
-        # thus, C == (D + 1) / 2
-        # this allows more possibilities when coloring branches:
-        # e.g. left branch length C, color options C; right branch length C-1, color options C
-        # or left branch length C, color opionts C+1; right branch length C-1, color options C-1
         left = path[D // 2 - 1]
-
-        # left branch as a virtual tree (root->left->left's children)
         left_tree = tup([tree(nodes, left, exclude=root)])
-
-        # all right branches (root->(children - left))
         right_tree = tree(nodes, root, exclude=left)
-
-        assert left_tree.height[1] == C
-        assert right_tree.height[1] == C - 1
 
         lg = [i // 2 for i in range(1, C * 2 + 2)]
         ll = list(zip(lg, reversed(lg)))
@@ -97,11 +60,7 @@ def combinations(nodes):
         for i in range(len(ll)):
             left_limits = ll[i]
             right_limits = rl[i]
-            # See README.md for explanation
             if sum(left_limits) > C:
-                assert sum(left_limits) == C + 1
-                # Compute strict colorings
-                # I.e. those that use exactly (R, B) colors (not fewer)
                 neigh = ll[i - 1: i] + ll[i + 1: i + 2]
                 lrv = enum(left_limits, left_tree) - sum(enum(ne, left_tree) for ne in neigh)
             else:
@@ -112,8 +71,7 @@ def combinations(nodes):
 
 
 def enum(limits, shape, _cache=dict()):
-    """ Enumerate possible unique colorings within limits (red, blue) for a tree of given shape """
-    limits = tuple(sorted(limits))  # doesn't matter which is red or blue
+    limits = tuple(sorted(limits))
     r, b = limits
     low, high = shape.height
     assert low <= high
@@ -121,10 +79,10 @@ def enum(limits, shape, _cache=dict()):
     assert r <= b
 
     if r >= high:
-        return 2 ** shape.edges  # any combination is possible
+        return 2 ** shape.edges
 
     if 0 in limits:
-        return 1  # only one color allowed
+        return 1
 
     assert r
     assert b
@@ -141,9 +99,8 @@ def enum(limits, shape, _cache=dict()):
     return _cache[key]
 
 
-if __name__ == "__main__":
-    import sys
-    sys.setrecursionlimit(2100)  # for largest input 1000
-    g = graph(sys.stdin.read())
-    rv = combinations(g)
-    print(rv % (10 ** 9 + 7))
+import sys
+sys.setrecursionlimit(99999)
+g = graph(sys.stdin.read())
+rv = combinations(g)
+print(rv % (10 ** 9 + 7))
