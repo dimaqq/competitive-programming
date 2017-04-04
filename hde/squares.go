@@ -18,40 +18,49 @@ package main
         1 + 2 + 3 becomes (1 + (2 + 3))
 
     Rules assumption:
-        I'll assume that `for` ban only apply to single test computation.
-        That is        it's OK to use `for` to iterative over tests.
+        I'll assume that `for` ban only applies to single test computation.
+        That is it's OK to use `for` to iterate over tests.
+        (I'm assuming test results have to be in correct order,
+         thus sequential processing is justified)
 */
 
 import (
-        "fmt"
-        "strings"
-        "strconv"
+    "os"
+    "fmt"
+    "bufio"
+    "strings"
+    "strconv"
 )
 
 func recsum(arr []string, res chan int) {
-        if len(arr) == 1 {
-                i, _ := strconv.Atoi(arr[0])
-                if i < 0 {
-                        res <- 0
-                } else {
-                res <- i * i
-                }
+    if len(arr) == 1 {
+        i, _ := strconv.Atoi(arr[0])
+        if i < 0 {
+            res<- 0
         } else {
+            res<- i * i
+        }
+    } else {
         ch := make (chan int)
         mid := len(arr) / 2
         go recsum(arr[:mid], ch)
         go recsum(arr[mid:], ch)
         res<- (<-ch) + (<-ch)
-        }
+    }
+}
+
+func process(file *os.File) {
+    result := make (chan int)
+    sc := bufio.NewScanner(file)
+    sc.Scan()  // skip number of tests
+
+    for sc.Scan() {
+        sc.Scan() // skip number of integers in this test
+        go recsum(strings.Split(sc.Text(), " "), result)
+        fmt.Println(<-result)
+    }
 }
 
 func main() {
-        fmt.Println("Hello, playground")
-        data := "3 -1 1 14"
-        inp := strings.Split(data, " ")
-        fmt.Println(inp)
-
-        result := make (chan int)
-        go recsum(inp, result)
-        fmt.Println(<-result)
+    process(os.Stdin)
 }
